@@ -45,5 +45,43 @@ module HelloworldPrac
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'
 
+include ExceptionLoggable
+
+ 
+
+unless ActionController::Base.consider_all_requests_local
+
+# yeah, its a long line
+
+rescue_from ActiveRecord::RecordNotFound, ActionController::RoutingError, ActionController::UnknownController, ActionController::UnknownAction, :with => :render_404
+
+rescue_from RuntimeError, :with => :render_500
+
+end
+
+ 
+
+private
+
+ 
+
+def render_404
+
+render :template => "shared/error_404", :layout => 'application', :status => :not_found
+
+end
+
+ 
+
+def render_500
+
+# hacky, but works, this logs the exception in ExceptionLoggable
+
+log_exception $!
+
+render :template => "shared/error_500", :layout => 'application', :status => :internal_server_error
+
+end    
+
   end
 end
